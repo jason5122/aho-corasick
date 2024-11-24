@@ -1,45 +1,31 @@
 #include "test_runner.h"
 
-#include "ac.h"
-#include "ac_util.h"
+#include "src/ac.h"
+#include "src/ac_util.h"
 
 #include <cassert>
-#include <string>
-#include <vector>
 
 bool TestRunner::run() {
     int total = 0;
     int fail = 0;
 
-    for (auto i = tests.begin(), e = tests.end(); i != e; i++) {
-        TestCase& t = *i;
-        int dict_len = t.dict.size();
-        unsigned int* strlen_v = new unsigned int[dict_len];
+    for (size_t i = 0; i < tests.size(); ++i) {
+        TestCase& t = tests[i];
+        ac_t* ac = ac_create(t.dict);
 
-        fprintf(stdout, ">Testing %s\nDictionary:[ ", t.name.data());
-        for (int i = 0, need_break = 0; i < dict_len; i++) {
-            const std::string& s = t.dict[i];
-            fprintf(stdout, "%s, ", s.data());
-            strlen_v[i] = s.length();
-            if (need_break++ == 16) {
-                fputs("\n  ", stdout);
-                need_break = 0;
+        std::println(">Test {}", i + 1);
+        std::print("Dictionary: [");
+        for (size_t j = 0; j < t.dict.size(); ++j) {
+            if (j == t.dict.size() - 1) {
+                std::print("{}", t.dict[j]);
+            } else {
+                std::print("{}, ", t.dict[j]);
             }
         }
-        fputs("]\n", stdout);
+        std::println("]");
 
-        // TODO: Refactor this.
-        std::vector<std::string> dict;
-        for (int i = 0; i < dict_len; i++) {
-            dict.emplace_back(t.dict[i]);
-        }
-
-        /* Create the dictionary */
-        ac_t* ac = ac_create(dict);
-        delete[] strlen_v;
-
-        for (int ii = 0, ee = t.strpairs.size(); ii < ee; ii++, total++) {
-            const StrPair& sp = t.strpairs[ii];
+        for (size_t j = 0; j < t.strpairs.size(); ++j, ++total) {
+            const StrPair& sp = t.strpairs[j];
             std::string str = sp.str;
             std::optional<std::string> match = sp.match;
 
@@ -62,25 +48,29 @@ bool TestRunner::run() {
             if (!match) {
                 if (m_b != -1 || m_e != -1) {
                     fail++;
-                    fprintf(stdout, "Not Supposed to match (%d, %d) \n", m_b, m_e);
-                } else fputs("Pass\n", stdout);
+                    std::println("Not Supposed to match ({}, {})", m_b, m_e);
+                } else {
+                    std::println("Pass");
+                }
                 continue;
             }
 
             // The string or its substring is match the dict.
             if (m_b >= len || m_b >= len) {
                 fail++;
-                fprintf(stdout, "Return value >= the length of the string (%d, %d)\n", m_b, m_e);
+                std::println("Return value >= the length of the string ({}, {})", m_b, m_e);
                 continue;
             } else {
                 int mlen = (*match).length();
                 if ((mlen != m_e - m_b + 1) || strncmp(str.data() + m_b, (*match).data(), mlen)) {
                     fail++;
-                    fprintf(stdout, "Fail\n");
-                } else fprintf(stdout, "Pass\n");
+                    std::println("Fail");
+                } else {
+                    std::println("Pass");
+                }
             }
         }
-        fputs("\n", stdout);
+        std::println("");
         ac_free(ac);
     }
 

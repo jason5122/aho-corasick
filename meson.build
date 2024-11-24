@@ -5,6 +5,6 @@ project('aho-corasick', 'cpp',
 )
 
 # This is required for std::format library.
-add_project_arguments('-fexperimental-library', language: 'cpp')
+add_project_arguments('-fexperimental-library', '-Wconversion', language: 'cpp')
 
-executable('aho_corasick', 'ac.cc', 'ac_fast.cc', 'ac_slow.cc', 'tests/test_runner.cc', 'tests/test_main.cc')
+executable('aho_corasick', 'main.cc', 'src/ac.cc', 'src/ac_fast.cc', 'src/ac_slow.cc', 'test/test_runner.cc')

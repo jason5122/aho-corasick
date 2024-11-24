@@ -1,6 +1,9 @@
 #pragma once
 
-#include "util/std_print.h"
+#include "test/std_print.h"
+#include <optional>
+#include <string>
+#include <vector>
 
 struct StrPair {
     std::string str;
@@ -8,7 +11,6 @@ struct StrPair {
 };
 
 struct TestCase {
-    std::string name;
     std::vector<std::string> dict;
     std::vector<StrPair> strpairs;
 };
