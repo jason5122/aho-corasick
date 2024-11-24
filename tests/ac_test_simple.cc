@@ -10,8 +10,8 @@
 
 namespace {
 struct StrPair {
-    const char* str;
-    const char* match;
+    std::string str;
+    std::optional<std::string> match;
 };
 
 struct TestingCase {
@@ -44,9 +44,9 @@ private:
 
 std::vector<TestingCase>* Tests::_tests = 0;
 
-class ACTestSimple : public ACTestBase {
+class ACTestSimple {
 public:
-    ACTestSimple(const char* banner) : ACTestBase(banner) {}
+    ACTestSimple(const char* banner) {}
     virtual bool Run();
 
 private:
@@ -96,13 +96,13 @@ bool ACTestSimple::Run() {
 
         for (int ii = 0, ee = t.strpairs.size(); ii < ee; ii++, total++) {
             const StrPair& sp = t.strpairs[ii];
-            const char* str = sp.str;  // the string to be matched
-            const char* match = sp.match;
+            std::string str = sp.str;
+            std::optional<std::string> match = sp.match;
 
-            fprintf(stdout, "[%3d] Testing '%s' : ", total, str);
+            fprintf(stdout, "[%3d] Testing '%s' : ", total, str.data());
 
-            int len = strlen(str);
-            ac_result_t r = ac_match(ac, str, len);
+            int len = str.length();
+            ac_result_t r = ac_match(ac, str.data(), len);
 
             int m_b = r.match_begin;
             int m_e = r.match_end;
@@ -129,8 +129,8 @@ bool ACTestSimple::Run() {
                 fprintf(stdout, "Return value >= the length of the string (%d, %d)\n", m_b, m_e);
                 continue;
             } else {
-                int mlen = strlen(match);
-                if ((mlen != m_e - m_b + 1) || strncmp(str + m_b, match, mlen)) {
+                int mlen = (*match).length();
+                if ((mlen != m_e - m_b + 1) || strncmp(str.data() + m_b, (*match).data(), mlen)) {
                     fail++;
                     fprintf(stdout, "Fail\n");
                 } else fprintf(stdout, "Pass\n");
@@ -146,7 +146,6 @@ bool ACTestSimple::Run() {
 
 bool Run_AC_Simple_Test() {
     ACTestSimple t("AC Simple test");
-    t.PrintBanner();
     return t.Run();
 }
 
@@ -165,7 +164,7 @@ Tests test1("test 1", dict1, strpair1);
 
 /* test 2*/
 std::vector<std::string> dict2 = {"poto", "poto"}; /* duplicated strings*/
-std::vector<StrPair> strpair2 = {{"The pot had a handle", nullptr}};
+std::vector<StrPair> strpair2 = {{"The pot had a handle", std::nullopt}};
 Tests test2("test 2", dict2, strpair2);
 
 /* test 3*/
@@ -205,11 +204,11 @@ Tests test9("test 9", dict9, strpair9);
  * of the pattern in dictionary.
  */
 std::vector<std::string> dict10 = {"abc"};
-std::vector<StrPair> strpair10 = {{"cde", nullptr}};
+std::vector<StrPair> strpair10 = {{"cde", std::nullopt}};
 Tests test10("test 10", dict10, strpair10);
 
 /* test 11*/
 std::vector<std::string> dict11 = {"‼️", "ØØ"};
 std::vector<StrPair> strpair11 = {
-    {"asdlfjadlskfjklads‼️", "‼️"}, {"asdf", nullptr}, {"ØØØ", "ØØ"}, {"Ø", nullptr}};
+    {"asdlfjadlskfjklads‼️", "‼️"}, {"asdf", std::nullopt}, {"ØØØ", "ØØ"}, {"Ø", std::nullopt}};
 Tests test11("test 11", dict11, strpair11);
