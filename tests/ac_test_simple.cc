@@ -14,57 +14,32 @@ struct StrPair {
     const char* match;
 };
 
-enum MatchVariant {
-    MV_FIRST_MATCH = 0,
-    MV_LEFT_LONGEST = 1,
-};
-
 struct TestingCase {
-    const char* name;
-    const char** dict;
-    StrPair* strpairs;
-    int dict_len;
-    int strpair_num;
-    MatchVariant match_variant;
+    std::string name;
+    std::vector<std::string> dict;
+    std::vector<StrPair> strpairs;
 };
 
 class Tests {
 public:
-    Tests(const char* name,
-          const char* dict[],
-          int dict_len,
-          StrPair strpairs[],
-          int strpair_num,
-          MatchVariant mv = MV_FIRST_MATCH) {
+    Tests(std::string_view name,
+          const std::vector<std::string>& dict,
+          const std::vector<StrPair>& strpairs) {
         if (!_tests) _tests = new std::vector<TestingCase>;
 
         TestingCase tc;
         tc.name = name;
         tc.dict = dict;
         tc.strpairs = strpairs;
-        tc.dict_len = dict_len;
-        tc.strpair_num = strpair_num;
-        tc.match_variant = mv;
         _tests->push_back(tc);
     }
 
     static std::vector<TestingCase>* Get_Tests() {
         return _tests;
     }
-    static void Erase_Tests() {
-        delete _tests;
-        _tests = 0;
-    }
 
 private:
     static std::vector<TestingCase>* _tests;
-};
-
-class LeftLongestTests : public Tests {
-public:
-    LeftLongestTests(
-        const char* name, const char* dict[], int dict_len, StrPair strpairs[], int strpair_num)
-        : Tests(name, dict, dict_len, strpairs, strpair_num, MV_LEFT_LONGEST) {}
 };
 
 std::vector<TestingCase>* Tests::_tests = 0;
@@ -76,7 +51,7 @@ public:
 
 private:
     void PrintSummary(int total, int fail) {
-        fprintf(stdout, "Test count : %d, fail: %d\n", total, fail);
+        fprintf(stdout, "Test case count: %d, fail: %d\n", total, fail);
         fflush(stdout);
     }
 };
@@ -94,14 +69,14 @@ bool ACTestSimple::Run() {
 
     for (auto i = tests->begin(), e = tests->end(); i != e; i++) {
         TestingCase& t = *i;
-        int dict_len = t.dict_len;
+        int dict_len = t.dict.size();
         unsigned int* strlen_v = new unsigned int[dict_len];
 
-        fprintf(stdout, ">Testing %s\nDictionary:[ ", t.name);
+        fprintf(stdout, ">Testing %s\nDictionary:[ ", t.name.data());
         for (int i = 0, need_break = 0; i < dict_len; i++) {
-            const char* s = t.dict[i];
-            fprintf(stdout, "%s, ", s);
-            strlen_v[i] = strlen(s);
+            const std::string& s = t.dict[i];
+            fprintf(stdout, "%s, ", s.data());
+            strlen_v[i] = s.length();
             if (need_break++ == 16) {
                 fputs("\n  ", stdout);
                 need_break = 0;
@@ -110,16 +85,16 @@ bool ACTestSimple::Run() {
         fputs("]\n", stdout);
 
         // TODO: Refactor this.
-        std::vector<std::string> patterns;
+        std::vector<std::string> dict;
         for (int i = 0; i < dict_len; i++) {
-            patterns.emplace_back(t.dict[i]);
+            dict.emplace_back(t.dict[i]);
         }
 
         /* Create the dictionary */
-        ac_t* ac = ac_create(patterns);
+        ac_t* ac = ac_create(dict);
         delete[] strlen_v;
 
-        for (int ii = 0, ee = t.strpair_num; ii < ee; ii++, total++) {
+        for (int ii = 0, ee = t.strpairs.size(); ii < ee; ii++, total++) {
             const StrPair& sp = t.strpairs[ii];
             const char* str = sp.str;  // the string to be matched
             const char* match = sp.match;
@@ -127,12 +102,7 @@ bool ACTestSimple::Run() {
             fprintf(stdout, "[%3d] Testing '%s' : ", total, str);
 
             int len = strlen(str);
-            ac_result_t r;
-            if (t.match_variant == MV_FIRST_MATCH) r = ac_match(ac, str, len);
-            else if (t.match_variant == MV_LEFT_LONGEST) r = ac_match_longest_l(ac, str, len);
-            else {
-                assert(false && "Unknown variant");
-            }
+            ac_result_t r = ac_match(ac, str, len);
 
             int m_b = r.match_begin;
             int m_e = r.match_end;
@@ -188,89 +158,58 @@ bool Run_AC_Simple_Test() {
 //
 
 /* test 1*/
-const char* dict1[] = {"he", "she", "his", "her"};
-StrPair strpair1[] = {{"he", "he"},  {"she", "she"}, {"his", "his"},   {"hers", "he"},
-                      {"ahe", "he"}, {"shhe", "he"}, {"shis2", "his"}, {"ahhe", "he"}};
-Tests test1("test 1",
-            dict1,
-            sizeof(dict1) / sizeof(dict1[0]),
-            strpair1,
-            sizeof(strpair1) / sizeof(strpair1[0]));
+std::vector<std::string> dict1 = {"he", "she", "his", "her"};
+std::vector<StrPair> strpair1 = {{"he", "he"},  {"she", "she"}, {"his", "his"},   {"hers", "he"},
+                                 {"ahe", "he"}, {"shhe", "he"}, {"shis2", "his"}, {"ahhe", "he"}};
+Tests test1("test 1", dict1, strpair1);
 
 /* test 2*/
-const char* dict2[] = {"poto", "poto"}; /* duplicated strings*/
-StrPair strpair2[] = {{"The pot had a handle", nullptr}};
-Tests test2("test 2", dict2, 2, strpair2, 1);
+std::vector<std::string> dict2 = {"poto", "poto"}; /* duplicated strings*/
+std::vector<StrPair> strpair2 = {{"The pot had a handle", nullptr}};
+Tests test2("test 2", dict2, strpair2);
 
 /* test 3*/
-const char* dict3[] = {"The"};
-StrPair strpair3[] = {{"The pot had a handle", "The"}};
-Tests test3("test 3", dict3, 1, strpair3, 1);
+std::vector<std::string> dict3 = {"The"};
+std::vector<StrPair> strpair3 = {{"The pot had a handle", "The"}};
+Tests test3("test 3", dict3, strpair3);
 
 /* test 4*/
-const char* dict4[] = {"pot"};
-StrPair strpair4[] = {{"The pot had a handle", "pot"}};
-Tests test4("test 4", dict4, 1, strpair4, 1);
+std::vector<std::string> dict4 = {"pot"};
+std::vector<StrPair> strpair4 = {{"The pot had a handle", "pot"}};
+Tests test4("test 4", dict4, strpair4);
 
 /* test 5*/
-const char* dict5[] = {"pot "};
-StrPair strpair5[] = {{"The pot had a handle", "pot "}};
-Tests test5("test 5", dict5, 1, strpair5, 1);
+std::vector<std::string> dict5 = {"pot "};
+std::vector<StrPair> strpair5 = {{"The pot had a handle", "pot "}};
+Tests test5("test 5", dict5, strpair5);
 
 /* test 6*/
-const char* dict6[] = {"ot h"};
-StrPair strpair6[] = {{"The pot had a handle", "ot h"}};
-Tests test6("test 6", dict6, 1, strpair6, 1);
+std::vector<std::string> dict6 = {"ot h"};
+std::vector<StrPair> strpair6 = {{"The pot had a handle", "ot h"}};
+Tests test6("test 6", dict6, strpair6);
 
 /* test 7*/
-const char* dict7[] = {"andle"};
-StrPair strpair7[] = {{"The pot had a handle", "andle"}};
-Tests test7("test 7", dict7, 1, strpair7, 1);
+std::vector<std::string> dict7 = {"andle"};
+std::vector<StrPair> strpair7 = {{"The pot had a handle", "andle"}};
+Tests test7("test 7", dict7, strpair7);
 
-const char* dict8[] = {"aaab"};
-StrPair strpair8[] = {{"aaaaaaab", "aaab"}};
-Tests test8("test 8", dict8, 1, strpair8, 1);
+std::vector<std::string> dict8 = {"aaab"};
+std::vector<StrPair> strpair8 = {{"aaaaaaab", "aaab"}};
+Tests test8("test 8", dict8, strpair8);
 
-const char* dict9[] = {"haha", "z"};
-StrPair strpair9[] = {{"aaaaz", "z"}, {"z", "z"}};
-Tests test9("test 9", dict9, 2, strpair9, 2);
+std::vector<std::string> dict9 = {"haha", "z"};
+std::vector<StrPair> strpair9 = {{"aaaaz", "z"}, {"z", "z"}};
+Tests test9("test 9", dict9, strpair9);
 
 /* test the case when input string doesn't contain even a single char
  * of the pattern in dictionary.
  */
-const char* dict10[] = {"abc"};
-StrPair strpair10[] = {{"cde", nullptr}};
-Tests test10("test 10", dict10, 1, strpair10, 1);
+std::vector<std::string> dict10 = {"abc"};
+std::vector<StrPair> strpair10 = {{"cde", nullptr}};
+Tests test10("test 10", dict10, strpair10);
 
 /* test 11*/
-const char* dict11[] = {"‼️"};
-StrPair strpair11[] = {{"asdlfjadlskfjklads‼️", "‼️"}, {"asdf", nullptr}};
-Tests test11("test 11", dict11, 1, strpair11, 2);
-
-//////////////////////////////////////////////////////////////////////////////
-//
-//    Testing cases for first longest match variant (i.e.
-// test ac_match_longest_l())
-//
-//////////////////////////////////////////////////////////////////////////////
-//
-
-// This was actually first motivation for left-longest-match
-const char* dict100[] = {"Mozilla", "Mozilla Mobile"};
-StrPair strpair100[] = {{"User Agent containing string Mozilla Mobile", "Mozilla Mobile"}};
-LeftLongestTests test100("l_test 100", dict100, 2, strpair100, 1);
-
-// Dict with single char is tricky
-const char* dict101[] = {"a", "abc"};
-StrPair strpair101[] = {{"abcdef", "abc"}};
-LeftLongestTests test101("l_test 101", dict101, 2, strpair101, 1);
-
-// Testing case with partially overlapping patterns. The purpose is to
-// check if the fail-link leading from terminal state is correct.
-//
-// The fail-link leading from terminal-state does not matter in
-// match-first-occurrence variant, as it stop when a terminal is hit.
-//
-const char* dict102[] = {"abc", "bcdef"};
-StrPair strpair102[] = {{"abcdef", "bcdef"}};
-LeftLongestTests test102("l_test 102", dict102, 2, strpair102, 1);
+std::vector<std::string> dict11 = {"‼️", "ØØ"};
+std::vector<StrPair> strpair11 = {
+    {"asdlfjadlskfjklads‼️", "‼️"}, {"asdf", nullptr}, {"ØØØ", "ØØ"}, {"Ø", nullptr}};
+Tests test11("test 11", dict11, strpair11);
