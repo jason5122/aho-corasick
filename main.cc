@@ -34,6 +34,8 @@ TestCase test12{
             {"abc\x{EF}\x{B7}\x{BD}def\x{BD}", "abc﷽def"},
         },
 };
+TestCase test13{.dict = {""}, .strpairs = {{"", std::nullopt}, {"abc", std::nullopt}}};
+TestCase test14{.dict = {"3"}, .strpairs = {{"abc123", "3"}, {"3", "3"}}};
 
 int main(int argc, char** argv) {
     TestRunner tests;
@@ -49,5 +51,7 @@ int main(int argc, char** argv) {
     tests.addTestCase(test10);
     tests.addTestCase(test11);
     tests.addTestCase(test12);
+    tests.addTestCase(test13);
+    tests.addTestCase(test14);
     return tests.run() ? 0 : 1;
 };

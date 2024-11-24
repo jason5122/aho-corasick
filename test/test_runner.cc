@@ -16,9 +16,9 @@ bool TestRunner::run() {
         std::print("Dictionary: [");
         for (size_t j = 0; j < t.dict.size(); ++j) {
             if (j == t.dict.size() - 1) {
-                std::print("{}", t.dict[j]);
+                std::print("'{}'", t.dict[j]);
             } else {
-                std::print("{}, ", t.dict[j]);
+                std::print("'{}', ", t.dict[j]);
             }
         }
         std::println("]");
