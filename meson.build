@@ -4,5 +4,4 @@ project('aho-corasick', 'cpp',
   default_options: ['cpp_std=c++20']
 )
 
-# TODO: Rename the executable.
-executable('aho_corasick', 'ac.cxx', 'ac_fast.cxx', 'ac_slow.cxx', 'tests/ac_test_simple.cxx', 'tests/test_main.cxx')
+executable('aho_corasick', 'ac.cc', 'ac_fast.cc', 'ac_slow.cc', 'tests/ac_test_simple.cc', 'tests/test_main.cc')

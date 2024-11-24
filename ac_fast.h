@@ -1,9 +1,9 @@
-#ifndef AC_FAST_H
-#define AC_FAST_H
+#pragma once
+
+#include "ac.h"
+#include "ac_slow.h"
 
 #include <vector>
-#include "ac.h"
-#include "ac_slow.hpp"
 
 using namespace std;
 
@@ -36,16 +36,16 @@ typedef uint32 State_ID;
 //   4. the contents of states.
 //
 typedef struct {
-    buf_header_t hdr;         // The header exposed to the user using this lib.
+    buf_header_t hdr;  // The header exposed to the user using this lib.
 #ifdef VERIFY
     ACS_Constructor* slow_impl;
 #endif
     uint32 buf_len;
-    AC_Ofst root_goto_ofst;   // addr of root node's goto() function.
-    AC_Ofst states_ofst_ofst; // addr of state pointer vector (indiced by id)
-    AC_Ofst first_state_ofst; // addr of the first state in the buffer.
-    uint16 root_goto_num;     // fan-out of root-node.
-    uint16 state_num;         // number of states
+    AC_Ofst root_goto_ofst;    // addr of root node's goto() function.
+    AC_Ofst states_ofst_ofst;  // addr of state pointer vector (indiced by id)
+    AC_Ofst first_state_ofst;  // addr of the first state in the buffer.
+    uint16 root_goto_num;      // fan-out of root-node.
+    uint16 state_num;          // number of states
 
     // Followed by the gut of the buffer:
     // 1. map: root's-valid-input -> kid's id
@@ -74,10 +74,13 @@ typedef struct {
 class Buf_Allocator {
 public:
     Buf_Allocator() : _buf(0) {}
-    virtual ~Buf_Allocator() { free(); }
+    virtual ~Buf_Allocator() {
+        free();
+    }
 
     virtual AC_Buffer* alloc(int sz) = 0;
     virtual void free() {};
+
 protected:
     AC_Buffer* _buf;
 };
@@ -85,23 +88,22 @@ protected:
 // Convert slow-AC-graph into fast one.
 class AC_Converter {
 public:
-    AC_Converter(ACS_Constructor& acs, Buf_Allocator& ba) :
-        _acs(acs), _buf_alloc(ba) {}
+    AC_Converter(ACS_Constructor& acs, Buf_Allocator& ba) : _acs(acs), _buf_alloc(ba) {}
     AC_Buffer* Convert();
 
 private:
     // Return the size in byte needed to to save the specified state.
-    uint32 Calc_State_Sz(const ACS_State *) const;
+    uint32 Calc_State_Sz(const ACS_State*) const;
 
     // In fast-AC-graph, the ID is bit trikcy. Given a state of slow-graph,
     // this function is to return the ID of its counterpart in the fast-graph.
-    State_ID Get_Renumbered_Id(const ACS_State *s) const {
-        const vector<uint32> &m = _id_map;
+    State_ID Get_Renumbered_Id(const ACS_State* s) const {
+        const vector<uint32>& m = _id_map;
         return m[s->Get_ID()];
     }
 
     AC_Buffer* Alloc_Buffer();
-    void Populate_Root_Goto_Func(AC_Buffer *, GotoVect&);
+    void Populate_Root_Goto_Func(AC_Buffer*, GotoVect&);
 
 #ifdef DEBUG
     void dump_buffer(AC_Buffer*, FILE*);
@@ -120,5 +122,3 @@ private:
 
 ac_result_t Match(AC_Buffer* buf, const char* str, uint32 len);
 ac_result_t Match_Longest_L(AC_Buffer* buf, const char* str, uint32 len);
-
-#endif  // AC_FAST_H

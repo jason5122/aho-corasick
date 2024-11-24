@@ -1,10 +1,10 @@
-#ifndef AC_H
-#define AC_H
+#pragma once
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define AC_EXPORT __attribute__ ((visibility ("default")))
+#define AC_EXPORT __attribute__((visibility("default")))
 
 /* If the subject-string doesn't match any of the given patterns, "match_begin"
  * should be a negative; otherwise the substring of the subject-string,
@@ -27,23 +27,22 @@ struct ac_t;
  *
  * Return the instance on success, or NUL otherwise.
  */
-ac_t* ac_create(const char** pattern_v, unsigned int* pattern_len_v,
+ac_t* ac_create(const char** pattern_v,
+                unsigned int* pattern_len_v,
                 unsigned int vect_len) AC_EXPORT;
 
-ac_result_t ac_match(ac_t*, const char *str, unsigned int len) AC_EXPORT;
+ac_result_t ac_match(ac_t*, const char* str, unsigned int len) AC_EXPORT;
 
-ac_result_t ac_match_longest_l(ac_t*, const char *str, unsigned int len) AC_EXPORT;
+ac_result_t ac_match_longest_l(ac_t*, const char* str, unsigned int len) AC_EXPORT;
 
 /* Similar to ac_match() except that it only returns match-begin. The rationale
  * for this interface is that luajit has hard time in dealing with strcture-
  * return-value.
  */
-int ac_match2(ac_t*, const char *str, unsigned int len) AC_EXPORT;
+int ac_match2(ac_t*, const char* str, unsigned int len) AC_EXPORT;
 
 void ac_free(void*) AC_EXPORT;
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* AC_H */
