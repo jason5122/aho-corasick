@@ -190,11 +190,11 @@ Run_AC_Simple_Test() {
 //
 
 /* test 1*/
-const char *dict1[] = {"he", "she", "his", "her"};
+const char *dict1[] = {"he", "she", "his", "her", "‼️"};
 StrPair strpair1[] = {
     {"he", "he"}, {"she", "she"}, {"his", "his"},
     {"hers", "he"}, {"ahe", "he"}, {"shhe", "he"},
-    {"shis2", "his"}, {"ahhe", "he"}
+    {"shis2", "his"}, {"ahhe", "he"}, {"asdlfjadlskfjklads‼️", "‼️"}
 };
 Tests test1("test 1",
             dict1, sizeof(dict1)/sizeof(dict1[0]),

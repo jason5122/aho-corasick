@@ -2,5 +2,7 @@
 *.o
 *.a
 *.so
+*.dylib
 *_dep.txt
 tests/testinput
+tests/ac_test

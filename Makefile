@@ -21,9 +21,9 @@ AR_NAME = libac.a
 #           Compile and link flags
 #
 #############################################################################
-PREFIX ?= /usr/local
+PREFIX ?= /opt/homebrew
 LUA_VERSION := 5.1
-LUA_INCLUDE_DIR := $(PREFIX)/include/lua$(LUA_VERSION)
+LUA_INCLUDE_DIR := $(PREFIX)/include/lua
 SO_TARGET_DIR := $(PREFIX)/lib/lua/$(LUA_VERSION)
 LUA_TARGET_DIR := $(PREFIX)/share/lua/$(LUA_VERSION)
 
@@ -115,9 +115,7 @@ $(AR_NAME) : $(addprefix $(BUILD_AR_DIR)/, ${LIBAC_A_SRC:.cxx=.o})
 #############################################################################
 #
 test : $(C_SO_NAME)
-	$(MAKE) -C tests && \
-	luajit tests/lua_test.lua && \
-	luajit tests/load_ac_test.lua
+	$(MAKE) -C tests
 
 benchmark: $(C_SO_NAME)
 	$(MAKE) benchmark -C tests

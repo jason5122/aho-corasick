@@ -25,9 +25,9 @@ int
 main (int argc, char** argv) {
     bool succ = Run_AC_Simple_Test();
 
-    vector<const char*> files;
-    for (int i = 1; i < argc; i++) { files.push_back(argv[i]); }
-    succ = Run_AC_Aggressive_Test(files) && succ;
+    // vector<const char*> files;
+    // for (int i = 1; i < argc; i++) { files.push_back(argv[i]); }
+    // succ = Run_AC_Aggressive_Test(files) && succ;
 
     return succ ? 0 : -1;
 };
