@@ -1,5 +1,3 @@
-#include "ac.h"
-#include "ac_util.h"
 #include "test_base.h"
 
 int main(int argc, char** argv) {

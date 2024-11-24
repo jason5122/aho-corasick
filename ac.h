@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
 /* If the subject-string doesn't match any of the given patterns, "match_begin"
  * should be a negative; otherwise the substring of the subject-string,
  * starting from offset "match_begin" to "match_end" incusively,
@@ -21,7 +24,7 @@ struct ac_t;
  *
  * Return the instance on success, or NUL otherwise.
  */
-ac_t* ac_create(const char** pattern_v, unsigned int* pattern_len_v, unsigned int vect_len);
+ac_t* ac_create(const std::vector<std::string>& patterns);
 
 ac_result_t ac_match(ac_t*, const char* str, unsigned int len);
 

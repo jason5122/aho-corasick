@@ -109,8 +109,14 @@ bool ACTestSimple::Run() {
         }
         fputs("]\n", stdout);
 
+        // TODO: Refactor this.
+        std::vector<std::string> patterns;
+        for (int i = 0; i < dict_len; i++) {
+            patterns.emplace_back(t.dict[i]);
+        }
+
         /* Create the dictionary */
-        ac_t* ac = ac_create(t.dict, strlen_v, dict_len);
+        ac_t* ac = ac_create(patterns);
         delete[] strlen_v;
 
         for (int ii = 0, ee = t.strpair_num; ii < ee; ii++, total++) {

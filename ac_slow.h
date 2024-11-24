@@ -7,6 +7,7 @@
 #include <map>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <vector>
 
 // Forward decl. the acronym "ACS" stands for "Aho-Corasick Slow implementation"
@@ -104,7 +105,7 @@ public:
     ACS_Constructor();
     ~ACS_Constructor();
 
-    void Construct(const char** strv, unsigned int* strlenv, unsigned int strnum);
+    void Construct(const std::vector<std::string>& patterns);
 
     Match_Result Match(const char* s, uint32 len) const {
         Match_Result r = MatchHelper(s, len);
@@ -135,7 +136,7 @@ public:
     }
 
 private:
-    void Add_Pattern(const char* str, unsigned int str_len, int pattern_idx);
+    void Add_Pattern(std::string_view str, int pattern_idx);
     ACS_State* new_state();
     void Propagate_faillink();
 
