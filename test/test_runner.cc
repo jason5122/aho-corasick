@@ -1,7 +1,6 @@
 #include "test_runner.h"
 
 #include "src/ac.h"
-#include "src/ac_util.h"
 
 #include <cassert>
 

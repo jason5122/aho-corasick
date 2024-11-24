@@ -3,6 +3,8 @@
 #include "ac_fast.h"
 #include "ac_slow.h"
 
+#include <cassert>
+
 class BufAlloc : public Buf_Allocator {
 public:
     virtual AC_Buffer* alloc(int sz) {
@@ -23,7 +25,7 @@ ac_t* ac_create(const std::vector<std::string>& patterns) {
         // TODO: Currently we use 16-bit to encode pattern-index (see the
         //  comment to AC_State::is_term), therefore we are not able to
         //  handle pattern set with more than 65535 entries.
-        return nullptr;
+        return 0;
     }
 
     ACS_Constructor acc;

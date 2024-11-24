@@ -2,13 +2,9 @@
 
 #include "ac.h"
 #include "ac_slow.h"
-
 #include <vector>
 
 class ACS_Constructor;
-
-using AC_Ofst = uint32;
-using State_ID = uint32;
 
 // The entire "fast" AC graph is converted from its "slow" version, and store
 // in an consecutive trunk of memory or "buffer". Since the pointers in the
@@ -34,12 +30,12 @@ using State_ID = uint32;
 //   4. the contents of states.
 //
 struct AC_Buffer {
-    uint32 buf_len;
-    AC_Ofst root_goto_ofst;    // addr of root node's goto() function.
-    AC_Ofst states_ofst_ofst;  // addr of state pointer vector (indiced by id)
-    AC_Ofst first_state_ofst;  // addr of the first state in the buffer.
-    uint16 root_goto_num;      // fan-out of root-node.
-    uint16 state_num;          // number of states
+    uint32_t buf_len;
+    uint32_t root_goto_ofst;    // addr of root node's goto() function.
+    uint32_t states_ofst_ofst;  // addr of state pointer vector (indiced by id)
+    uint32_t first_state_ofst;  // addr of the first state in the buffer.
+    uint16_t root_goto_num;     // fan-out of root-node.
+    uint16_t state_num;         // number of states
 
     // Followed by the gut of the buffer:
     // 1. map: root's-valid-input -> kid's id
@@ -56,13 +52,13 @@ struct AC_State {
     // into S_a, S_b. So, S_a is the 1st kid, the ID of kids are consecutive,
     // so we don't need to save all the target kids.
     //
-    State_ID first_kid;
-    AC_Ofst fail_link;
-    short depth;             // How far away from root.
-    unsigned short is_term;  // Is terminal node. if is_term != 0, it encodes
-                             // the value of "1 + pattern-index".
-    unsigned char goto_num;  // The number of valid transition.
-    InputTy input_vect[1];   // Vector of valid input. Must be last field!
+    uint32_t first_kid;
+    uint32_t fail_link;
+    short depth;                  // How far away from root.
+    unsigned short is_term;       // Is terminal node. if is_term != 0, it encodes
+                                  // the value of "1 + pattern-index".
+    unsigned char goto_num;       // The number of valid transition.
+    unsigned char input_vect[1];  // Vector of valid input. Must be last field!
 };
 
 class Buf_Allocator {
@@ -87,12 +83,12 @@ public:
 
 private:
     // Return the size in byte needed to to save the specified state.
-    uint32 Calc_State_Sz(const ACS_State*) const;
+    uint32_t Calc_State_Sz(const ACS_State*) const;
 
-    // In fast-AC-graph, the ID is bit tricyy. Given a state of slow-graph,
+    // In fast-AC-graph, the ID is bit tricky. Given a state of slow-graph,
     // this function is to return the ID of its counterpart in the fast-graph.
-    State_ID Get_Renumbered_Id(const ACS_State* s) const {
-        const std::vector<uint32>& m = _id_map;
+    uint32_t Get_Renumbered_Id(const ACS_State* s) const {
+        const std::vector<uint32_t>& m = _id_map;
         return m[s->Get_ID()];
     }
 
@@ -104,10 +100,10 @@ private:
     Buf_Allocator& _buf_alloc;
 
     // map: ID of state in slow-graph -> ID of counterpart in fast-graph.
-    std::vector<uint32> _id_map;
+    std::vector<uint32_t> _id_map;
 
     // map: ID of state in slow-graph -> offset of counterpart in fast-graph.
-    std::vector<AC_Ofst> _ofst_map;
+    std::vector<uint32_t> _ofst_map;
 };
 
-ac_result_t Match(AC_Buffer* buf, std::string_view str, uint32 len);
+ac_result_t Match(AC_Buffer* buf, std::string_view str, unsigned int len);
