@@ -1,3 +1,4 @@
+#include <cassert>
 #include <stdio.h>
 #include <string.h>
 #include <string>
@@ -8,24 +9,24 @@
 #include "test_base.h"
 
 namespace {
-typedef struct {
+struct StrPair {
     const char* str;
     const char* match;
-} StrPair;
+};
 
-typedef enum {
+enum MatchVariant {
     MV_FIRST_MATCH = 0,
     MV_LEFT_LONGEST = 1,
-} MatchVariant;
+};
 
-typedef struct {
+struct TestingCase {
     const char* name;
     const char** dict;
     StrPair* strpairs;
     int dict_len;
     int strpair_num;
     MatchVariant match_variant;
-} TestingCase;
+};
 
 class Tests {
 public:
@@ -124,7 +125,7 @@ bool ACTestSimple::Run() {
             if (t.match_variant == MV_FIRST_MATCH) r = ac_match(ac, str, len);
             else if (t.match_variant == MV_LEFT_LONGEST) r = ac_match_longest_l(ac, str, len);
             else {
-                ASSERT(false && "Unknown variant");
+                assert(false && "Unknown variant");
             }
 
             int m_b = r.match_begin;

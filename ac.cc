@@ -5,7 +5,7 @@
 
 static inline ac_result_t _match(buf_header_t* ac, const char* str, unsigned int len) {
     AC_Buffer* buf = (AC_Buffer*)(void*)ac;
-    ASSERT(ac->magic_num == AC_MAGIC_NUM);
+    assert(ac->magic_num == AC_MAGIC_NUM);
 
     ac_result_t r = Match(buf, str, len);
 
@@ -13,9 +13,9 @@ static inline ac_result_t _match(buf_header_t* ac, const char* str, unsigned int
     {
         Match_Result r2 = buf->slow_impl->Match(str, len);
         if (r.match_begin != r2.begin) {
-            ASSERT(0);
+            assert(0);
         } else {
-            ASSERT((r.match_begin < 0) ||
+            assert((r.match_begin < 0) ||
                    (r.match_end == r2.end && r.pattern_idx == r2.pattern_idx));
         }
     }
@@ -34,7 +34,7 @@ ac_result_t ac_match(ac_t* ac, const char* str, unsigned int len) {
 
 ac_result_t ac_match_longest_l(ac_t* ac, const char* str, unsigned int len) {
     AC_Buffer* buf = (AC_Buffer*)(void*)ac;
-    ASSERT(((buf_header_t*)ac)->magic_num == AC_MAGIC_NUM);
+    assert(((buf_header_t*)ac)->magic_num == AC_MAGIC_NUM);
 
     ac_result_t r = Match_Longest_L(buf, str, len);
     return r;
@@ -50,7 +50,7 @@ public:
     virtual void free() {}
 
     static void myfree(AC_Buffer* buf) {
-        ASSERT(buf->hdr.magic_num == AC_MAGIC_NUM);
+        assert(buf->hdr.magic_num == AC_MAGIC_NUM);
         const char* b = (const char*)buf;
         delete[] b;
     }

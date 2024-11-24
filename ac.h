@@ -7,11 +7,11 @@
  * the pattern is "pattern_v[pattern_idx]" where the "pattern_v" is the
  * first actual argument passing to ac_create())
  */
-typedef struct {
+struct ac_result_t {
     int match_begin;
     int match_end;
     int pattern_idx;
-} ac_result_t;
+};
 
 struct ac_t;
 

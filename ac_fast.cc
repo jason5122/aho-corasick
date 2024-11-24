@@ -3,6 +3,7 @@
 #include "ac_slow.h"
 
 #include <algorithm>  // for std::sort
+#include <cassert>
 
 uint32 AC_Converter::Calc_State_Sz(const ACS_State* s) const {
     AC_State dummy;
@@ -126,7 +127,7 @@ AC_Buffer* AC_Converter::Convert() {
         //    corresponding input.
         //
         State_ID state_id = idx + 1;
-        ASSERT(_id_map[old_s->Get_ID()] == state_id);
+        assert(_id_map[old_s->Get_ID()] == state_id);
 
         state_ofst_vect[state_id] = ofst;
 
@@ -155,7 +156,7 @@ AC_Buffer* AC_Converter::Convert() {
     }
 
     // This assertion might be useful to catch buffer overflow
-    ASSERT(ofst == buf->buf_len);
+    assert(ofst == buf->buf_len);
 
     // Populate the fail-link field.
     for (auto i = wl.begin(), e = wl.end(); i != e; i++) {
@@ -176,8 +177,8 @@ AC_Buffer* AC_Converter::Convert() {
 static inline AC_State* Get_State_Addr(unsigned char* buf_base,
                                        AC_Ofst* StateOfstVect,
                                        uint32 state_id) {
-    ASSERT(state_id != 0 && "root node is handled in speical way");
-    ASSERT(state_id < ((AC_Buffer*)buf_base)->state_num);
+    assert(state_id != 0 && "root node is handled in speical way");
+    assert(state_id < ((AC_Buffer*)buf_base)->state_num);
     return (AC_State*)(buf_base + StateOfstVect[state_id]);
 }
 
@@ -254,7 +255,7 @@ static inline bool Binary_Search_Input(InputTy* input_vect,
 }
 #endif
 
-typedef enum {
+enum MATCH_VARIANT {
     // Look for the first match. e.g. pattern set = {"ab", "abc", "def"},
     // subject string "ababcdef". The first match would be "ab" at the
     // beginning of the subject string.
@@ -272,7 +273,7 @@ typedef enum {
 
     // Return all patterns that match that given subject string. NYI.
     MV_ALL_MATCHES,
-} MATCH_VARIANT;
+};
 
 /* The Match_Tmpl is the template for vairants MV_FIRST_MATCH, MV_LEFT_LONGEST,
  * MV_RIGHT_LONGEST (If we really really need MV_RIGHT_LONGEST variant, we are
@@ -376,7 +377,7 @@ static ac_result_t Match_Tmpl(AC_Buffer* buf, const char* str, uint32 len) {
                 continue;
             }
 
-            ASSERT(false && "NYI");
+            assert(false && "NYI");
         }
     }
 
@@ -431,7 +432,7 @@ void AC_Converter::dump_buffer(AC_Buffer* buf, FILE* f) {
     AC_Ofst* state_ofst_vect = (AC_Ofst*)(buf_base + buf->states_ofst_ofst);
     for (uint32 i = 1, e = buf->state_num; i < e; i++) {
         AC_Ofst ofst = state_ofst_vect[i];
-        ASSERT(ofst == state_ofst[i]);
+        assert(ofst == state_ofst[i]);
         fprintf(f, "S:%d, ofst:%d, goto={", i, ofst);
 
         AC_State* s = (AC_State*)(buf_base + ofst);

@@ -3,6 +3,7 @@
 #include "ac_util.h"
 
 #include <algorithm>  // for std::sort
+#include <cassert>
 #include <map>
 #include <stdio.h>
 #include <string.h>
@@ -13,7 +14,7 @@ class ACS_State;
 class ACS_Constructor;
 class AhoCorasick;
 
-typedef std::map<InputTy, ACS_State*> ACS_Goto_Map;
+using ACS_Goto_Map = std::map<InputTy, ACS_State*>;
 
 class Match_Result {
 public:
@@ -23,8 +24,8 @@ public:
     Match_Result(int b, int e, int p) : begin(b), end(e), pattern_idx(p) {}
 };
 
-typedef std::pair<InputTy, ACS_State*> GotoPair;
-typedef std::vector<GotoPair> GotoVect;
+using GotoPair = std::pair<InputTy, ACS_State*>;
+using GotoVect = std::vector<GotoPair>;
 
 // Sorting functor
 class GotoSort {
@@ -79,13 +80,13 @@ public:
         return _is_terminal;
     }
     int get_Pattern_Idx() const {
-        ASSERT(is_Terminal() && _pattern_idx >= 0);
+        assert(is_Terminal() && _pattern_idx >= 0);
         return _pattern_idx;
     }
 
 private:
     void set_Pattern_Idx(int idx) {
-        ASSERT(is_Terminal());
+        assert(is_Terminal());
         _pattern_idx = idx;
     }
 
@@ -144,11 +145,11 @@ private:
     void Verify_Result(const char* subject, const Match_Result* r) const;
     void Save_Patterns(const char** strv, unsigned int* strlenv, int vect_len);
     const char* get_ith_Pattern(unsigned i) const {
-        ASSERT(i < _pattern_vect.size());
+        assert(i < _pattern_vect.size());
         return _pattern_vect.at(i);
     }
     unsigned get_ith_Pattern_Len(unsigned i) const {
-        ASSERT(i < _pattern_lens.size());
+        assert(i < _pattern_lens.size());
         return _pattern_lens.at(i);
     }
 #else

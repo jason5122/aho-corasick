@@ -3,6 +3,7 @@
 #include "ac.h"
 
 #include <algorithm>
+#include <cassert>
 #include <ctype.h>
 #include <strings.h>  // for bzero
 
@@ -252,7 +253,7 @@ void ACS_Constructor::Verify_Result(const char* subject, const Match_Result* r) 
         unsigned len = r->end - r->begin + 1;
         int ptn_idx = r->pattern_idx;
 
-        ASSERT(ptn_idx >= 0 && len == get_ith_Pattern_Len(ptn_idx) &&
+        assert(ptn_idx >= 0 && len == get_ith_Pattern_Len(ptn_idx) &&
                memcmp(subject + r->begin, get_ith_Pattern(ptn_idx), len) == 0);
     }
 }
@@ -267,7 +268,7 @@ void ACS_Constructor::Save_Patterns(const char** strv, unsigned int* strlenv, in
 
     // HINT: patterns are delimited by '\0' in order to ease debugging.
     buf_size += pattern_num;
-    ASSERT(_pattern_buf == 0);
+    assert(_pattern_buf == 0);
     _pattern_buf = new char[buf_size + 1];
 #define MAGIC_NUM 0x5a
     _pattern_buf[buf_size] = MAGIC_NUM;
@@ -285,7 +286,7 @@ void ACS_Constructor::Save_Patterns(const char** strv, unsigned int* strlenv, in
         _pattern_buf[ofst++] = '\0';
     }
 
-    ASSERT(_pattern_buf[buf_size] == MAGIC_NUM);
+    assert(_pattern_buf[buf_size] == MAGIC_NUM);
 #undef MAGIC_NUM
 }
 

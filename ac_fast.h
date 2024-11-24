@@ -7,8 +7,8 @@
 
 class ACS_Constructor;
 
-typedef uint32 AC_Ofst;
-typedef uint32 State_ID;
+using AC_Ofst = uint32;
+using State_ID = uint32;
 
 // The entire "fast" AC graph is converted from its "slow" version, and store
 // in an consecutive trunk of memory or "buffer". Since the pointers in the
@@ -33,7 +33,7 @@ typedef uint32 State_ID;
 //
 //   4. the contents of states.
 //
-typedef struct {
+struct AC_Buffer {
     buf_header_t hdr;  // The header exposed to the user using this lib.
 #ifdef VERIFY
     ACS_Constructor* slow_impl;
@@ -49,10 +49,10 @@ typedef struct {
     // 1. map: root's-valid-input -> kid's id
     // 2. map: state's ID -> offset of the state
     // 3. states' content.
-} AC_Buffer;
+};
 
 // Depict the state of "fast" AC graph.
-typedef struct {
+struct AC_State {
     // transition are sorted. For instance, state s1, has two transitions :
     //   goto(b) -> S_b, goto(a)->S_a. The inputs are sorted in the ascending
     // order, and the target states are permuted accordingly. In this case,
@@ -67,7 +67,7 @@ typedef struct {
                              // the value of "1 + pattern-index".
     unsigned char goto_num;  // The number of valid transition.
     InputTy input_vect[1];   // Vector of valid input. Must be last field!
-} AC_State;
+};
 
 class Buf_Allocator {
 public:
