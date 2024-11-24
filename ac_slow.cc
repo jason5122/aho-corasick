@@ -23,8 +23,7 @@ ACS_Constructor::ACS_Constructor() : _next_node_id(1) {
 }
 
 ACS_Constructor::~ACS_Constructor() {
-    for (std::vector<ACS_State*>::iterator i = _all_states.begin(), e = _all_states.end(); i != e;
-         i++) {
+    for (auto i = _all_states.begin(), e = _all_states.end(); i != e; i++) {
         delete *i;
     }
     _all_states.clear();
@@ -62,7 +61,7 @@ void ACS_Constructor::Propagate_faillink() {
     std::vector<ACS_State*> wl;
 
     const ACS_Goto_Map& m = r->Get_Goto_Map();
-    for (ACS_Goto_Map::const_iterator i = m.begin(), e = m.end(); i != e; i++) {
+    for (auto i = m.begin(), e = m.end(); i != e; i++) {
         ACS_State* s = i->second;
         s->_fail_link = r;
         wl.push_back(s);
@@ -82,8 +81,7 @@ void ACS_Constructor::Propagate_faillink() {
 
         const ACS_Goto_Map& tran_map = s->Get_Goto_Map();
 
-        for (ACS_Goto_Map::const_iterator ii = tran_map.begin(), ee = tran_map.end(); ii != ee;
-             ii++) {
+        for (auto ii = tran_map.begin(), ee = tran_map.end(); ii != ee; ii++) {
             InputTy c = ii->first;
             ACS_State* tran = ii->second;
 
@@ -117,7 +115,7 @@ void ACS_Constructor::Construct(const char** strv, unsigned int* strlenv, uint32
     unsigned char* p = _root_char;
 
     const ACS_Goto_Map& m = _root->Get_Goto_Map();
-    for (ACS_Goto_Map::const_iterator i = m.begin(), e = m.end(); i != e; i++) {
+    for (auto i = m.begin(), e = m.end(); i != e; i++) {
         p[i->first] = 1;
     }
 }
@@ -180,15 +178,13 @@ Match_Result ACS_Constructor::MatchHelper(const char* str, uint32 len) const {
 #ifdef DEBUG
 void ACS_Constructor::dump_text(const char* txtfile) const {
     FILE* f = fopen(txtfile, "w+");
-    for (std::vector<ACS_State*>::const_iterator i = _all_states.begin(), e = _all_states.end();
-         i != e; i++) {
+    for (auto i = _all_states.begin(), e = _all_states.end(); i != e; i++) {
         ACS_State* s = *i;
 
         fprintf(f, "S%d goto:{", s->Get_ID());
         const ACS_Goto_Map& goto_func = s->Get_Goto_Map();
 
-        for (ACS_Goto_Map::const_iterator i = goto_func.begin(), e = goto_func.end(); i != e;
-             i++) {
+        for (auto i = goto_func.begin(), e = goto_func.end(); i != e; i++) {
             InputTy input = i->first;
             ACS_State* tran = i->second;
             if (isprint(input)) fprintf(f, "'%c' -> S:%d,", input, tran->Get_ID());
@@ -217,8 +213,7 @@ void ACS_Constructor::dump_dot(const char* dotfile) const {
 
     // Emit node information
     fprintf(f, "%s%d [style=filled];\n", indent, _root->Get_ID());
-    for (std::vector<ACS_State*>::const_iterator i = _all_states.begin(), e = _all_states.end();
-         i != e; i++) {
+    for (auto i = _all_states.begin(), e = _all_states.end(); i != e; i++) {
         ACS_State* s = *i;
         if (s->_is_terminal) {
             fprintf(f, "%s%d [shape=doublecircle];\n", indent, s->Get_ID());
@@ -227,13 +222,12 @@ void ACS_Constructor::dump_dot(const char* dotfile) const {
     fprintf(f, "\n");
 
     // Emit edge information
-    for (std::vector<ACS_State*>::const_iterator i = _all_states.begin(), e = _all_states.end();
-         i != e; i++) {
+    for (auto i = _all_states.begin(), e = _all_states.end(); i != e; i++) {
         ACS_State* s = *i;
         uint32 id = s->Get_ID();
 
         const ACS_Goto_Map& m = s->Get_Goto_Map();
-        for (ACS_Goto_Map::const_iterator ii = m.begin(), ee = m.end(); ii != ee; ii++) {
+        for (auto ii = m.begin(), ee = m.end(); ii != ee; ii++) {
             InputTy input = ii->first;
             ACS_State* tran = ii->second;
             if (isalnum(input))

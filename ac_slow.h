@@ -13,8 +13,6 @@ class ACS_State;
 class ACS_Constructor;
 class AhoCorasick;
 
-using namespace std;
-
 typedef std::map<InputTy, ACS_State*> ACS_Goto_Map;
 
 class Match_Result {
@@ -25,8 +23,8 @@ public:
     Match_Result(int b, int e, int p) : begin(b), end(e), pattern_idx(p) {}
 };
 
-typedef pair<InputTy, ACS_State*> GotoPair;
-typedef vector<GotoPair> GotoVect;
+typedef std::pair<InputTy, ACS_State*> GotoPair;
+typedef std::vector<GotoPair> GotoVect;
 
 // Sorting functor
 class GotoSort {
@@ -48,7 +46,7 @@ public:
         _goto_map[c] = s;
     }
     ACS_State* Get_Goto(InputTy c) const {
-        ACS_Goto_Map::const_iterator iter = _goto_map.find(c);
+        auto iter = _goto_map.find(c);
         return iter != _goto_map.end() ? (*iter).second : 0;
     }
 
@@ -56,7 +54,7 @@ public:
     void Get_Sorted_Gotos(GotoVect& Gotos) const {
         const ACS_Goto_Map& m = _goto_map;
         Gotos.clear();
-        for (ACS_Goto_Map::const_iterator i = m.begin(), e = m.end(); i != e; i++) {
+        for (auto i = m.begin(), e = m.end(); i != e; i++) {
             Gotos.push_back(GotoPair(i->first, i->second));
         }
         sort(Gotos.begin(), Gotos.end(), GotoSort());
@@ -124,7 +122,7 @@ public:
     const ACS_State* Get_Root_State() const {
         return _root;
     }
-    const vector<ACS_State*>& Get_All_States() const {
+    const std::vector<ACS_State*>& Get_All_States() const {
         return _all_states;
     }
 
@@ -166,7 +164,7 @@ private:
 
 private:
     ACS_State* _root;
-    vector<ACS_State*> _all_states;
+    std::vector<ACS_State*> _all_states;
     unsigned char* _root_char;
     uint32 _next_node_id;
 

@@ -17,7 +17,7 @@ uint32 AC_Converter::Calc_State_Sz(const ACS_State* s) const {
 }
 
 AC_Buffer* AC_Converter::Alloc_Buffer() {
-    const vector<ACS_State*>& all_states = _acs.Get_All_States();
+    const std::vector<ACS_State*>& all_states = _acs.Get_All_States();
     const ACS_State* root_state = _acs.Get_Root_State();
     uint32 root_fanout = root_state->Get_GotoNum();
 
@@ -44,8 +44,7 @@ AC_Buffer* AC_Converter::Alloc_Buffer() {
     first_state_ofst = sz;
 
     uint32 state_sz = 0;
-    for (vector<ACS_State*>::const_iterator i = all_states.begin(), e = all_states.end(); i != e;
-         i++) {
+    for (auto i = all_states.begin(), e = all_states.end(); i != e; i++) {
         state_sz += Calc_State_Sz(*i);
     }
     state_sz -= Calc_State_Sz(root_state);
@@ -78,7 +77,7 @@ void AC_Converter::Populate_Root_Goto_Func(AC_Buffer* buf, GotoVect& goto_vect) 
     bool full_fantout = (goto_vect.size() == 255);
     if (likely(!full_fantout)) bzero(root_gotos, 256 * sizeof(InputTy));
 
-    for (GotoVect::iterator i = goto_vect.begin(), e = goto_vect.end(); i != e; i++, new_id++) {
+    for (auto i = goto_vect.begin(), e = goto_vect.end(); i != e; i++, new_id++) {
         InputTy c = i->first;
         ACS_State* s = i->second;
         _id_map[s->Get_ID()] = new_id;
@@ -107,9 +106,9 @@ AC_Buffer* AC_Converter::Convert() {
 
     // Step 4: Converting the remaining states by BFSing the graph.
     // First of all, enter root's immediate kids to the working list.
-    vector<const ACS_State*> wl;
+    std::vector<const ACS_State*> wl;
     State_ID id = 1;
-    for (GotoVect::iterator i = gotovect.begin(), e = gotovect.end(); i != e; i++, id++) {
+    for (auto i = gotovect.begin(), e = gotovect.end(); i != e; i++, id++) {
         ACS_State* s = i->second;
         wl.push_back(s);
         _id_map[s->Get_ID()] = id;
@@ -143,8 +142,7 @@ AC_Buffer* AC_Converter::Convert() {
         uint32 input_idx = 0;
         uint32 id = wl.size() + 1;
         InputTy* input_vect = new_s->input_vect;
-        for (GotoVect::iterator i = gotovect.begin(), e = gotovect.end(); i != e;
-             i++, id++, input_idx++) {
+        for (auto i = gotovect.begin(), e = gotovect.end(); i != e; i++, id++, input_idx++) {
             input_vect[input_idx] = i->first;
 
             ACS_State* kid = i->second;
@@ -160,7 +158,7 @@ AC_Buffer* AC_Converter::Convert() {
     ASSERT(ofst == buf->buf_len);
 
     // Populate the fail-link field.
-    for (vector<const ACS_State*>::iterator i = wl.begin(), e = wl.end(); i != e; i++) {
+    for (auto i = wl.begin(), e = wl.end(); i != e; i++) {
         const ACS_State* slow_s = *i;
         State_ID fast_s_id = _id_map[slow_s->Get_ID()];
         AC_State* fast_s = (AC_State*)(buf_base + state_ofst_vect[fast_s_id]);
@@ -400,7 +398,7 @@ void AC_Converter::dump_buffer(AC_Buffer* buf, FILE* f) {
 
     fprintf(f, "Id maps between old/slow and new/fast graphs\n");
     int old_id = 0;
-    for (vector<uint32>::iterator i = _id_map.begin(), e = _id_map.end(); i != e; i++, old_id++) {
+    for (auto i = _id_map.begin(), e = _id_map.end(); i != e; i++, old_id++) {
         State_ID new_id = *i;
         if (new_id != 0) {
             fprintf(f, "%d -> %d, ", old_id, new_id);
@@ -409,7 +407,7 @@ void AC_Converter::dump_buffer(AC_Buffer* buf, FILE* f) {
     fprintf(f, "\n");
 
     int idx = 0;
-    for (vector<uint32>::iterator i = _id_map.begin(), e = _id_map.end(); i != e; i++, idx++) {
+    for (auto i = _id_map.begin(), e = _id_map.end(); i != e; i++, idx++) {
         uint32 id = *i;
         if (id == 0) continue;
         state_ofst[id] = _ofst_map[idx];

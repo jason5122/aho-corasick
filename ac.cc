@@ -23,16 +23,16 @@ static inline ac_result_t _match(buf_header_t* ac, const char* str, unsigned int
     return r;
 }
 
-extern "C" int ac_match2(ac_t* ac, const char* str, unsigned int len) {
+int ac_match2(ac_t* ac, const char* str, unsigned int len) {
     ac_result_t r = _match((buf_header_t*)(void*)ac, str, len);
     return r.match_begin;
 }
 
-extern "C" ac_result_t ac_match(ac_t* ac, const char* str, unsigned int len) {
+ac_result_t ac_match(ac_t* ac, const char* str, unsigned int len) {
     return _match((buf_header_t*)(void*)ac, str, len);
 }
 
-extern "C" ac_result_t ac_match_longest_l(ac_t* ac, const char* str, unsigned int len) {
+ac_result_t ac_match_longest_l(ac_t* ac, const char* str, unsigned int len) {
     AC_Buffer* buf = (AC_Buffer*)(void*)ac;
     ASSERT(((buf_header_t*)ac)->magic_num == AC_MAGIC_NUM);
 
@@ -56,7 +56,7 @@ public:
     }
 };
 
-extern "C" ac_t* ac_create(const char** strv, unsigned int* strlenv, unsigned int v_len) {
+ac_t* ac_create(const char** strv, unsigned int* strlenv, unsigned int v_len) {
     if (v_len >= 65535) {
         // TODO: Currently we use 16-bit to encode pattern-index (see the
         //  comment to AC_State::is_term), therefore we are not able to
@@ -83,7 +83,7 @@ extern "C" ac_t* ac_create(const char** strv, unsigned int* strlenv, unsigned in
     return (ac_t*)(void*)buf;
 }
 
-extern "C" void ac_free(void* ac) {
+void ac_free(void* ac) {
     AC_Buffer* buf = (AC_Buffer*)ac;
 #ifdef VERIFY
     delete buf->slow_impl;

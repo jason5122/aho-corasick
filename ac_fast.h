@@ -5,8 +5,6 @@
 
 #include <vector>
 
-using namespace std;
-
 class ACS_Constructor;
 
 typedef uint32 AC_Ofst;
@@ -98,7 +96,7 @@ private:
     // In fast-AC-graph, the ID is bit trikcy. Given a state of slow-graph,
     // this function is to return the ID of its counterpart in the fast-graph.
     State_ID Get_Renumbered_Id(const ACS_State* s) const {
-        const vector<uint32>& m = _id_map;
+        const std::vector<uint32>& m = _id_map;
         return m[s->Get_ID()];
     }
 
@@ -114,10 +112,10 @@ private:
     Buf_Allocator& _buf_alloc;
 
     // map: ID of state in slow-graph -> ID of counterpart in fast-graph.
-    vector<uint32> _id_map;
+    std::vector<uint32> _id_map;
 
     // map: ID of state in slow-graph -> offset of counterpart in fast-graph.
-    vector<AC_Ofst> _ofst_map;
+    std::vector<AC_Ofst> _ofst_map;
 };
 
 ac_result_t Match(AC_Buffer* buf, const char* str, uint32 len);

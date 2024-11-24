@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 class ACTestBase {
 public:
     ACTestBase(const char* name) : _banner(name) {}
@@ -16,7 +15,7 @@ public:
     virtual bool Run() = 0;
 
 private:
-    string _banner;
+    std::string _banner;
 };
 
 typedef std::pair<const char*, int> StrInfo;
@@ -46,7 +45,7 @@ protected:
 protected:
     const char* _filepath;
     int _fd;
-    vector<StrInfo> _keys;
+    std::vector<StrInfo> _keys;
     char* _msg;
     int _msg_len;
     int _key_num;  // number of strings in dictionary
@@ -58,5 +57,4 @@ protected:
     int _key_max_len;
 };
 
-extern bool Run_AC_Simple_Test();
-extern bool Run_AC_Aggressive_Test(const vector<const char*>& files);
+bool Run_AC_Simple_Test();

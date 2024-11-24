@@ -7,8 +7,6 @@
 #include "ac_util.h"
 #include "test_base.h"
 
-using namespace std;
-
 namespace {
 typedef struct {
     const char* str;
@@ -37,7 +35,7 @@ public:
           StrPair strpairs[],
           int strpair_num,
           MatchVariant mv = MV_FIRST_MATCH) {
-        if (!_tests) _tests = new vector<TestingCase>;
+        if (!_tests) _tests = new std::vector<TestingCase>;
 
         TestingCase tc;
         tc.name = name;
@@ -49,7 +47,7 @@ public:
         _tests->push_back(tc);
     }
 
-    static vector<TestingCase>* Get_Tests() {
+    static std::vector<TestingCase>* Get_Tests() {
         return _tests;
     }
     static void Erase_Tests() {
@@ -58,7 +56,7 @@ public:
     }
 
 private:
-    static vector<TestingCase>* _tests;
+    static std::vector<TestingCase>* _tests;
 };
 
 class LeftLongestTests : public Tests {
@@ -68,7 +66,7 @@ public:
         : Tests(name, dict, dict_len, strpairs, strpair_num, MV_LEFT_LONGEST) {}
 };
 
-vector<TestingCase>* Tests::_tests = 0;
+std::vector<TestingCase>* Tests::_tests = 0;
 
 class ACTestSimple : public ACTestBase {
 public:
@@ -87,13 +85,13 @@ bool ACTestSimple::Run() {
     int total = 0;
     int fail = 0;
 
-    vector<TestingCase>* tests = Tests::Get_Tests();
+    std::vector<TestingCase>* tests = Tests::Get_Tests();
     if (!tests) {
         PrintSummary(0, 0);
         return true;
     }
 
-    for (vector<TestingCase>::iterator i = tests->begin(), e = tests->end(); i != e; i++) {
+    for (auto i = tests->begin(), e = tests->end(); i != e; i++) {
         TestingCase& t = *i;
         int dict_len = t.dict_len;
         unsigned int* strlen_v = new unsigned int[dict_len];
