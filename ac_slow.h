@@ -109,7 +109,6 @@ public:
 
     Match_Result Match(const char* s, uint32 len) const {
         Match_Result r = MatchHelper(s, len);
-        Verify_Result(s, &r);
         return r;
     }
 
@@ -117,10 +116,6 @@ public:
         return Match(s, strlen(s));
     }
 
-#ifdef DEBUG
-    void dump_text(const char* = "ac.txt") const;
-    void dump_dot(const char* = "ac.dot") const;
-#endif
     const ACS_State* Get_Root_State() const {
         return _root;
     }
@@ -142,37 +137,9 @@ private:
 
     Match_Result MatchHelper(const char*, uint32 len) const;
 
-#ifdef VERIFY
-    void Verify_Result(const char* subject, const Match_Result* r) const;
-    void Save_Patterns(const char** strv, unsigned int* strlenv, int vect_len);
-    const char* get_ith_Pattern(unsigned i) const {
-        assert(i < _pattern_vect.size());
-        return _pattern_vect.at(i);
-    }
-    unsigned get_ith_Pattern_Len(unsigned i) const {
-        assert(i < _pattern_lens.size());
-        return _pattern_lens.at(i);
-    }
-#else
-    void Verify_Result(const char* subject, const Match_Result* r) const {
-        (void)subject;
-        (void)r;
-    }
-    void Save_Patterns(const char** strv, unsigned int* strlenv, int vect_len) {
-        (void)strv;
-        (void)strlenv;
-    }
-#endif
-
 private:
     ACS_State* _root;
     std::vector<ACS_State*> _all_states;
     unsigned char* _root_char;
     uint32 _next_node_id;
-
-#ifdef VERIFY
-    char* _pattern_buf;
-    vector<int> _pattern_lens;
-    vector<char*> _pattern_vect;
-#endif
 };

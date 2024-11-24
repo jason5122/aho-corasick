@@ -34,10 +34,6 @@ using State_ID = uint32;
 //   4. the contents of states.
 //
 struct AC_Buffer {
-    buf_header_t hdr;  // The header exposed to the user using this lib.
-#ifdef VERIFY
-    ACS_Constructor* slow_impl;
-#endif
     uint32 buf_len;
     AC_Ofst root_goto_ofst;    // addr of root node's goto() function.
     AC_Ofst states_ofst_ofst;  // addr of state pointer vector (indiced by id)
@@ -102,10 +98,6 @@ private:
 
     AC_Buffer* Alloc_Buffer();
     void Populate_Root_Goto_Func(AC_Buffer*, GotoVect&);
-
-#ifdef DEBUG
-    void dump_buffer(AC_Buffer*, FILE*);
-#endif
 
 private:
     ACS_Constructor& _acs;
