@@ -190,11 +190,11 @@ Run_AC_Simple_Test() {
 //
 
 /* test 1*/
-const char *dict1[] = {"he", "she", "his", "her", "‼️"};
+const char *dict1[] = {"he", "she", "his", "her"};
 StrPair strpair1[] = {
     {"he", "he"}, {"she", "she"}, {"his", "his"},
     {"hers", "he"}, {"ahe", "he"}, {"shhe", "he"},
-    {"shis2", "his"}, {"ahhe", "he"}, {"asdlfjadlskfjklads‼️", "‼️"}
+    {"shis2", "his"}, {"ahhe", "he"}
 };
 Tests test1("test 1",
             dict1, sizeof(dict1)/sizeof(dict1[0]),
@@ -202,7 +202,7 @@ Tests test1("test 1",
 
 /* test 2*/
 const char *dict2[] = {"poto", "poto"}; /* duplicated strings*/
-StrPair strpair2[] = {{"The pot had a handle", 0}};
+StrPair strpair2[] = {{"The pot had a handle", nullptr}};
 Tests test2("test 2", dict2, 2, strpair2, 1);
 
 /* test 3*/
@@ -242,8 +242,13 @@ Tests test9("test 9", dict9, 2, strpair9, 2);
  * of the pattern in dictionary.
  */
 const char *dict10[] = {"abc"};
-StrPair strpair10[] = {{"cde", 0}};
+StrPair strpair10[] = {{"cde", nullptr}};
 Tests test10("test 10", dict10, 1, strpair10, 1);
+
+/* test 11*/
+const char *dict11[] = {"‼️"};
+StrPair strpair11[] = {{"asdlfjadlskfjklads‼️", "‼️"}, {"asdf", nullptr}};
+Tests test11("test 11", dict11, 1, strpair11, 2);
 
 
 //////////////////////////////////////////////////////////////////////////////
