@@ -1,12 +1,11 @@
 #include <cassert>
-#include <stdio.h>
-#include <string.h>
 #include <string>
 #include <vector>
 
 #include "ac.h"
 #include "ac_util.h"
 #include "test_base.h"
+#include "util/std_print.h"
 
 namespace {
 struct StrPair {
@@ -99,7 +98,7 @@ bool ACTestSimple::Run() {
             std::string str = sp.str;
             std::optional<std::string> match = sp.match;
 
-            fprintf(stdout, "[%3d] Testing '%s' : ", total, str.data());
+            std::print("[{}] Testing '{}' : ", total, str);
 
             int len = str.length();
             ac_result_t r = ac_match(ac, str.data(), len);
@@ -109,7 +108,7 @@ bool ACTestSimple::Run() {
 
             // The return value per se is insane.
             if (m_b > m_e || ((m_b < 0 || m_e < 0) && (m_b != -1 || m_e != -1))) {
-                fprintf(stdout, "Insane return value (%d, %d)\n", m_b, m_e);
+                std::println("Insane return value ({}, {})", m_b, m_e);
                 fail++;
                 continue;
             }

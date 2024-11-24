@@ -28,12 +28,4 @@ ac_t* ac_create(const std::vector<std::string>& patterns);
 
 ac_result_t ac_match(ac_t*, const char* str, unsigned int len);
 
-ac_result_t ac_match_longest_l(ac_t*, const char* str, unsigned int len);
-
-/* Similar to ac_match() except that it only returns match-begin. The rationale
- * for this interface is that luajit has hard time in dealing with strcture-
- * return-value.
- */
-int ac_match2(ac_t*, const char* str, unsigned int len);
-
 void ac_free(void*);

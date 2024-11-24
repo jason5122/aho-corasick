@@ -3,41 +3,9 @@
 #include "ac_fast.h"
 #include "ac_slow.h"
 
-static inline ac_result_t _match(buf_header_t* ac, const char* str, unsigned int len) {
-    AC_Buffer* buf = (AC_Buffer*)(void*)ac;
-    assert(ac->magic_num == AC_MAGIC_NUM);
-
-    ac_result_t r = Match(buf, str, len);
-
-#ifdef VERIFY
-    {
-        Match_Result r2 = buf->slow_impl->Match(str, len);
-        if (r.match_begin != r2.begin) {
-            assert(0);
-        } else {
-            assert((r.match_begin < 0) ||
-                   (r.match_end == r2.end && r.pattern_idx == r2.pattern_idx));
-        }
-    }
-#endif
-    return r;
-}
-
-int ac_match2(ac_t* ac, const char* str, unsigned int len) {
-    ac_result_t r = _match((buf_header_t*)(void*)ac, str, len);
-    return r.match_begin;
-}
-
 ac_result_t ac_match(ac_t* ac, const char* str, unsigned int len) {
-    return _match((buf_header_t*)(void*)ac, str, len);
-}
-
-ac_result_t ac_match_longest_l(ac_t* ac, const char* str, unsigned int len) {
     AC_Buffer* buf = (AC_Buffer*)(void*)ac;
-    assert(((buf_header_t*)ac)->magic_num == AC_MAGIC_NUM);
-
-    ac_result_t r = Match_Longest_L(buf, str, len);
-    return r;
+    return Match(buf, str, len);
 }
 
 class BufAlloc : public Buf_Allocator {

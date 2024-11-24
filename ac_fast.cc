@@ -255,40 +255,7 @@ static inline bool Binary_Search_Input(InputTy* input_vect,
 }
 #endif
 
-enum MATCH_VARIANT {
-    // Look for the first match. e.g. pattern set = {"ab", "abc", "def"},
-    // subject string "ababcdef". The first match would be "ab" at the
-    // beginning of the subject string.
-    MV_FIRST_MATCH,
-
-    // Look for the left-most longest match. Follow above example; there are
-    // two longest matches, "abc" and "def", and the left-most longest match
-    // is "abc".
-    MV_LEFT_LONGEST,
-
-    // Similar to the left-most longest match, except that it returns the
-    // *right* most longest match. Follow above example, the match would
-    // be "def". NYI.
-    MV_RIGHT_LONGEST,
-
-    // Return all patterns that match that given subject string. NYI.
-    MV_ALL_MATCHES,
-};
-
-/* The Match_Tmpl is the template for vairants MV_FIRST_MATCH, MV_LEFT_LONGEST,
- * MV_RIGHT_LONGEST (If we really really need MV_RIGHT_LONGEST variant, we are
- * better off implementing it in a separate function).
- *
- * The Match_Tmpl supports three variants at once "symbolically", once it's
- * instanced to a particular variants, all the code irrelevant to the variants
- * will be statically removed. So don't worry about the code like
- * "if (variant == MV_XXXX)"; they will not incur any penalty.
- *
- * The drawback of using template is increased code size. Unfortunately, there
- * is no silver bullet.
- */
-template <MATCH_VARIANT variant>
-static ac_result_t Match_Tmpl(AC_Buffer* buf, const char* str, uint32 len) {
+ac_result_t Match(AC_Buffer* buf, const char* str, uint32 len) {
     unsigned char* buf_base = (unsigned char*)(buf);
     unsigned char* root_goto = buf_base + buf->root_goto_ofst;
     AC_Ofst* states_ofst_vect = (AC_Ofst*)(buf_base + buf->states_ofst_ofst);
@@ -317,10 +284,7 @@ static ac_result_t Match_Tmpl(AC_Buffer* buf, const char* str, uint32 len) {
             r.match_begin = idx - state->depth;
             r.match_end = idx - 1;
             r.pattern_idx = state->is_term - 1;
-
-            if (variant == MV_FIRST_MATCH) {
-                return r;
-            }
+            return r;
         }
     }
 
@@ -357,39 +321,15 @@ static ac_result_t Match_Tmpl(AC_Buffer* buf, const char* str, uint32 len) {
 
         // Check to see if the state is terminal state?
         if (state->is_term) {
-            if (variant == MV_FIRST_MATCH) {
-                ac_result_t r;
-                r.match_begin = idx - state->depth;
-                r.match_end = idx - 1;
-                r.pattern_idx = state->is_term - 1;
-                return r;
-            }
-
-            if (variant == MV_LEFT_LONGEST) {
-                int match_begin = idx - state->depth;
-                int match_end = idx - 1;
-
-                if (r.match_begin == -1 || match_end - match_begin > r.match_end - r.match_begin) {
-                    r.match_begin = match_begin;
-                    r.match_end = match_end;
-                    r.pattern_idx = state->is_term - 1;
-                }
-                continue;
-            }
-
-            assert(false && "NYI");
+            ac_result_t r;
+            r.match_begin = idx - state->depth;
+            r.match_end = idx - 1;
+            r.pattern_idx = state->is_term - 1;
+            return r;
         }
     }
 
     return r;
-}
-
-ac_result_t Match(AC_Buffer* buf, const char* str, uint32 len) {
-    return Match_Tmpl<MV_FIRST_MATCH>(buf, str, len);
-}
-
-ac_result_t Match_Longest_L(AC_Buffer* buf, const char* str, uint32 len) {
-    return Match_Tmpl<MV_LEFT_LONGEST>(buf, str, len);
 }
 
 #ifdef DEBUG
