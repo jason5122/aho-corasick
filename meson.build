@@ -6,7 +6,9 @@ project('aho-corasick', 'cpp',
 
 # This is required for std::format library.
 add_project_arguments('-fexperimental-library', language: 'cpp')
+
+# TODO: Ensure all conversions are correct. Not doing so will result in subtle, hard-to-detect
+#       errors (an hour has already been spent debugging one of those).
 add_project_arguments('-Wconversion', language: 'cpp')
 
 executable('aho_corasick', 'main.cc', 'src/ac.cc', 'src/ac_fast.cc', 'src/ac_slow.cc', 'test/test_runner.cc')
-executable('aho_corasick_alt', 'main.cc', 'src/ac.cc', 'src-alt/ac_fast.cc', 'src/ac_slow.cc', 'test/test_runner.cc')

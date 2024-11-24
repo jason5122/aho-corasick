@@ -24,6 +24,16 @@ TestCase test11{
     .dict = {"‼️", "ØØ"},
     .strpairs = {{"hello‼️", "‼️"}, {"asdf", std::nullopt}, {"ØØØ", "ØØ"}, {"Ø", std::nullopt}},
 };
+TestCase test12{
+    .dict = {"abc﷽def"},
+    .strpairs =
+        {
+            {"hello﷽worldabc﷽abc﷽def", "abc﷽def"},
+            {"abc\x{EF}\x{B7}\x{BD}def", "abc﷽def"},
+            {"abc\x{EF}\x{B7}\x{B7}\x{BD}def", std::nullopt},
+            {"abc\x{EF}\x{B7}\x{BD}def\x{BD}", "abc﷽def"},
+        },
+};
 
 int main(int argc, char** argv) {
     TestRunner tests;
@@ -38,5 +48,6 @@ int main(int argc, char** argv) {
     tests.addTestCase(test9);
     tests.addTestCase(test10);
     tests.addTestCase(test11);
+    tests.addTestCase(test12);
     return tests.run() ? 0 : 1;
 };

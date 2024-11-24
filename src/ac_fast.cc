@@ -78,7 +78,7 @@ void AC_Converter::Populate_Root_Goto_Func(AC_Buffer* buf, GotoVect& goto_vect) 
     uint32 new_id = 1;
     bool full_fantout = (goto_vect.size() == 255);
     if (!full_fantout) [[likely]] {
-        bzero(root_gotos, 256 * sizeof(InputTy));
+        memset(root_gotos, '\0', 256 * sizeof(InputTy));
     }
 
     for (auto i = goto_vect.begin(), e = goto_vect.end(); i != e; i++, new_id++) {
