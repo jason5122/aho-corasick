@@ -6,3 +6,4 @@
 *_dep.txt
 tests/testinput
 tests/ac_test
+.cache/
